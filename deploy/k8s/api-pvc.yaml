@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: quantum-api-data
+  namespace: quantum-sim
+spec:
+  accessModes:
+    - ReadWriteMany # Ensure the chosen StorageClass supports multi-writer access; otherwise consider Postgres.
+  resources:
+    requests:
+      storage: 1Gi

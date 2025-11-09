@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quantum-frontend-config
+  namespace: quantum-sim
+data:
+  API_BASE_URL: /api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-frontend
+  namespace: quantum-sim
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-frontend
+  template:
+    metadata:
+      labels:
+        app: quantum-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: quantum-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: quantum-frontend-config
+                  key: API_BASE_URL
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
